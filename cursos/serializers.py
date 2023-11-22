@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from .models import Curso, Avaliacao
+
+from .models import Avaliacao, Curso
+
 
 class AvaliacaoSerializer(serializers.ModelSerializer):
     
@@ -14,7 +16,7 @@ class AvaliacaoSerializer(serializers.ModelSerializer):
             'avaliacao','avaliacao','criacao','ativo'
         )
 
-class CursoSerializer(serializers.ModelSerializer)
+class CursoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Curso
         fields = (
