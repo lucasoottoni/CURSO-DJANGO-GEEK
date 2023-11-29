@@ -1,4 +1,5 @@
-from rest_framework import generics, status, viewsets
+from asyncio import mixins
+from rest_framework import generics, status, viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.exceptions import APIException, MethodNotAllowed
 from rest_framework.generics import get_object_or_404
@@ -69,19 +70,39 @@ class CursoViewSet(viewsets.ModelViewSet):
     serializer_class = CursoSerializer
     """ Mais maneiras de não permitir algumas ações
     #http_method_names = ['get', 'post', 'head'] # para definir a penas os métodos que quero
+    
+    class AvaliacaoViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet): #herdando somente classes de list
+        queryset = Avaliacao.objects.all()
+        serializer_class = AvaliacaoSerializer
 
     # para personalizar erro em método nao permitido
     def list(self, request):
         raise MethodNotAllowed('GET', detail='Method GET not allowed without lookup')
     """                         
     
-    @action(detail=True, methods=['get'])
+    @action(detail=True, methods=['get']) #cursos/id/avaliacoes
     def avaliacoes(self,request,pk=None):
-        curso = self.get_object()
-        serializer = AvaliacaoSerializer(curso.avaliacoes.all(),many=True)
+        """ Sem paginação 
+            curso = self.get_object()
+            serializer = AvaliacaoSerializer(curso.avaliacoes.all(),many=True)
+            return Response(serializer.data)
+        """
+        """Com Paginação"""
+        self.pagination_class.page_size=1
+        avaliacoes = Avaliacao.objects.filter(curso_id=pk)
+        page=self.paginate_queryset(avaliacoes)
+        
+        if page is not None:
+            serializer = AvaliacaoSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = AvaliacaoSerializer(avaliacoes, many=True)
         return Response(serializer.data)
 
+
 class AvaliacaoViewSet(viewsets.ModelViewSet):
-    queryset = Avaliacao.objects.all()
-    serializer_class = AvaliacaoSerializer
+   pagination_class = None # disable pagination configured in global
+   queryset = Avaliacao.objects.all()
+   serializer_class = AvaliacaoSerializer
+
+
     

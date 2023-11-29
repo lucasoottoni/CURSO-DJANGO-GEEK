@@ -17,8 +17,16 @@ class AvaliacaoSerializer(serializers.ModelSerializer):
         )
 
 class CursoSerializer(serializers.ModelSerializer):
+    # Nested relationship - pode ter problemas em grande volumes de dados (de avaliações nesse caso) -  Será bacana por exemplo num OneToOne
+        #avaliacoes = AvaliacaoSerializer(many=True, read_only=True) 
+    
+    #HyperLinked Related Field - cria um link para cada avaliação
+        #avaliacoes = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name = 'avaliacao-detail')
+        
+    # Primary Key Related Field - Traz lista somente com os ID's das avaliações
+    avaliacoes = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     class Meta:
         model = Curso
         fields = (
-            'id','titulo','url','criacao','ativo'
+            'id','titulo','url','criacao','ativo','avaliacoes'
         )
