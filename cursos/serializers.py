@@ -1,6 +1,11 @@
 from rest_framework import serializers
 
 from .models import Avaliacao, Curso
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from django.contrib.auth import get_user_model
+
 
 
 class AvaliacaoSerializer(serializers.ModelSerializer):
@@ -30,3 +35,32 @@ class CursoSerializer(serializers.ModelSerializer):
         fields = (
             'id','titulo','url','criacao','ativo','avaliacoes'
         )
+        
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['name'] = 'name'
+        token['2'] = 'the name2'
+        # ...
+        return token
+
+class ObtainTokenSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        
+        usuario = get_user_model()
+        # The default result (access/refresh tokens)
+        data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
+        # Custom data you want to include
+        data.update({'user': usuario.__name__})
+       # data.update({'id': self.user.__id})
+        # and everything else you want to send in the response
+        return data

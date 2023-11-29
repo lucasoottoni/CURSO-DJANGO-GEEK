@@ -1,5 +1,6 @@
 from django.urls import path
 from rest_framework.routers import SimpleRouter
+from rest_framework.authtoken import views
 
 from .views import (AvaliacaoAPIView, AvaliacaoViewSet, AvaliacoesAPIView,
                     CursoAPIView, CursosAPIView, CursoViewSet)
@@ -17,4 +18,6 @@ urlpatterns = [
 
     path('avaliacoes/',AvaliacoesAPIView.as_view(), name='avaliacoes'),
     path('avaliacoes/<int:avaliacao_pk>/',AvaliacaoAPIView.as_view(), name='avaliacao'),
+    path('api-token-auth/', views.obtain_auth_token)
+
 ]
