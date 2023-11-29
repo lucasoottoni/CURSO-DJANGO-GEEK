@@ -17,9 +17,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         
         data = super(CustomTokenObtainPairSerializer, self).validate(attrs)
         # Custom data you want to include
-        data["teste"] = "Testando"
-        data.update({'user': self.user.email})
         data.update({'id': self.user.id})
-        print("Olha o dict")
+        data.update({'fullname': self.user.first_name + ' '+self.user.last_name})
         # and everything else you want to send in the response
         return data
